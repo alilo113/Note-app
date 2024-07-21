@@ -1,11 +1,20 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { Note } from "./note";
+import Button from '@mui/material/Button';
+import ClickAwayListener from '@mui/material/ClickAwayListener';
+import Grow from '@mui/material/Grow';
+import Paper from '@mui/material/Paper';
+import Popper from '@mui/material/Popper';
+import MenuItem from '@mui/material/MenuItem';
+import MenuList from '@mui/material/MenuList';
+import Stack from '@mui/material/Stack';
 
 export function Home() {
     const nav = useNavigate();
     const [post, setPost] = useState([]);
     const [error, setError] = useState("");
-
+    
     useEffect(() => {
         async function fetchData() {
             try {
@@ -45,19 +54,13 @@ export function Home() {
                     <button className="p-2 bg-blue-500 text-white rounded hover:bg-blue-600">Log-in</button>
                     <button className="p-2 bg-blue-500 text-white rounded hover:bg-blue-600">Sign-up</button>
                 </div>
-                <div className="mt-6 w-full flex flex-wrap gap-4">
-                    {post.length > 0 ? (
-                        post.map((note, index) => (
-                            <div key={index} className="bg-white p-4 rounded shadow min-w-[200px] max-w-[400px] cursor-pointer">
-                                <h3 className="text-xl font-bold">{note.title}</h3>
-                                <p dangerouslySetInnerHTML={{ __html: note.note }}></p>
-                            </div>
-                        ))
-                    ) : (
-                        <p>No notes available</p>
-                    )}
+                <Note></Note>
+                <div 
+                    className="text-4xl text-white bg-red-600 p-5 cursor-pointer rounded hover:bg-red-700 mt-6" 
+                    onClick={newNoteNav}
+                >
+                    +
                 </div>
-                <div className="text-4xl text-white bg-red-600 p-5 cursor-pointer rounded hover:bg-red-700 mt-6" onClick={newNoteNav}>+</div>
                 {error && <div className="text-red-500 mt-4">{error}</div>}
             </div>
         </div>

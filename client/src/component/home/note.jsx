@@ -6,9 +6,8 @@ import Paper from '@mui/material/Paper';
 import Popper from '@mui/material/Popper';
 import MenuItem from '@mui/material/MenuItem';
 import MenuList from '@mui/material/MenuList';
-import Stack from '@mui/material/Stack';
 
-export function Note({ post }) {
+export function Note({ post, setPost }) {
     const [openMenu, setOpenMenu] = useState(null); // Tracks which menu is open
     const anchorRef = useRef({});
 
@@ -45,6 +44,34 @@ export function Note({ post }) {
         };
     }, []);
 
+    async function handleDelete(id) {
+        try {
+            // Send a DELETE request to the API endpoint
+            const response = await fetch(`/api/notes/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+    
+            // Check if the response is successful
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'An error occurred while deleting the note');
+            }
+    
+            // If successful, update the state
+            const result = await response.json();
+            console.log(result.message); // Optional: log success message
+    
+            // Update the post state
+            setPost((currentPost) => currentPost.filter(post => post._id !== id));
+        } catch (error) {
+            console.error('Delete failed:', error);
+            // Optionally, show a user-friendly error message
+        }
+    }    
+
     return (
         <div className="mt-6 w-full flex flex-wrap gap-4">
             {post.length > 0 ? (
@@ -73,7 +100,7 @@ export function Note({ post }) {
                                             <ClickAwayListener onClickAway={handleCloseMenu}>
                                                 <MenuList autoFocusItem={openMenu === index} id="menu-list-grow" onKeyDown={handleListKeyDown}>
                                                     <MenuItem onClick={() => alert(`Edit ${note.title} clicked`)}>Edit</MenuItem>
-                                                    <MenuItem onClick={() => alert(`Delete ${note.title} clicked`)}>Delete</MenuItem>
+                                                    <MenuItem onClick={() => handleDelete(note._id)}>Delete</MenuItem>
                                                 </MenuList>
                                             </ClickAwayListener>
                                         </Paper>

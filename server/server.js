@@ -8,8 +8,8 @@ const app = express();
 const port = 3000;
 
 mongoose.connect('mongodb://127.0.0.1:27017/notedb')
-.then(() => console.log('Database connected'))
-.catch((error) => console.error('Database connection error:', error));
+    .then(() => console.log('Database connected'))
+    .catch((error) => console.error('Database connection error:', error));
 
 app.use(bodyParser.json());
 app.use(cors());
@@ -41,6 +41,20 @@ app.get('/api/notes', async (req, res) => {
     } catch (error) {
         console.error('Error fetching notes:', error);
         res.status(500).json({ message: 'Failed to fetch notes' });
+    }
+});
+
+app.delete("/api/notes/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+        const deletedNote = await Note.findByIdAndDelete(id); // Use the 'id' to find and delete the note
+
+        if (!deletedNote) {
+            return res.status(404).json({ error: "Note not found" });
+        }
+        res.status(200).json({ message: "Note deleted successfully" });
+    } catch (error) {
+        res.status(500).json({ error: "An error occurred while deleting the note" });
     }
 });
 

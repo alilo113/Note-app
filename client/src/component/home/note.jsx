@@ -54,17 +54,13 @@ export function Note({ post, setPost }) {
                 },
             });
     
-            // Check if the response is successful
+            // throw an erro if the req not successful
             if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(errorData.error || 'An error occurred while deleting the note');
             }
     
-            // If successful, update the state
-            const result = await response.json();
-            console.log(result.message); // Optional: log success message
-    
-            // Update the post state
+            // Update the post state if successful
             setPost((currentPost) => currentPost.filter(post => post._id !== id));
         } catch (error) {
             console.error('Delete failed:', error);

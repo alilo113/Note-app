@@ -1,24 +1,32 @@
-const express = require("express")
-const app = express()
-const port = 3000
-const mongoose = require("mongoose")
-const note = require("./module/note")
+const express = require('express');
+const mongoose = require('mongoose');
+const Note = require('./module/note'); // Import the model, not the schema
+const bodyParser = require('body-parser');
+const cors = require("cors")
+const app = express();
+const port = 3000;
 
-mongoose.connect("mongodb://127.0.0.1:27017/notedb")
-.then(() => console.log("database connected"))
-.catch((error) => console.log(error))
+mongoose.connect('mongodb://127.0.0.1:27017/notedb')
+.then(() => console.log('Database connected'))
+.catch((error) => console.error('Database connection error:', error));
 
-app.get("/api/notes", async (req, res) => {
+app.use(bodyParser.json());
+app.use(cors())
+
+app.post('/api/notes', async (req, res) => {
     try {
-        const {title, note} = req.body;
-        const newNote = new note({title: title, note: note})
-        console.log(newNote)
-        await newNote.save()
-        res.status(200).json({message: "New post created!!"})
-    } catch (error) {
-        console.log(error)        
-        res.status(500).json({message: "Faild to create new post"})
-    }
-})
+        const { title, note } = req.body;
+        if (!title || !note) {
+            return res.status(400).json({ message: 'Title and note are required' });
+        }
 
-app.listen(port, console.log(`This app is listen to port ${port}`))
+        const newNote = new Note({ title, note });
+        await newNote.save();
+        res.status(201).json({ message: 'New post created' });
+    } catch (error) {
+        console.error('Error creating note:', error);
+        res.status(500).json({ message: 'Failed to create note' });
+    }
+});
+
+app.listen(port, () => console.log(`Server listening on port ${port}`));

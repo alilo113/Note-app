@@ -1,6 +1,7 @@
-const mongoose = require("mongoose")
+const mongoose = require('mongoose');
 
-const newNote = new mongoose.Schema({
+// Define the schema
+const noteSchema = new mongoose.Schema({
     title: {
         type: String,
         required: true,
@@ -11,7 +12,10 @@ const newNote = new mongoose.Schema({
         required: true,
         unique: true
     }
-})
+});
 
-const note = mongoose.model("note", newNote)
-module.exports = newNote
+// Create the model
+const Note = mongoose.model('Note', noteSchema);
+
+// Export the model
+module.exports = Note;

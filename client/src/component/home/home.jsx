@@ -1,9 +1,23 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export function Home() {
     const nav = useNavigate()
+    const [post, setPost] = useState([])
+    const [error, setError] = useState("")
 
+    useEffect(async () => {
+        try {
+            const res = await fetch("https://localhost:3000/api/notes", {
+                method: "GET",
+                header: {
+                    "Content-Type": "Applicaion/json"
+                }
+            })
+        } catch (error) {
+            
+        }
+    }, [])
     function newNoteNav(){
         nav("/newnote")
     }

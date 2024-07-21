@@ -1,6 +1,6 @@
 const mongoose = require("mongoose")
 
-const newPost = new mongoose.Schema({
+const newNote = new mongoose.Schema({
     title: {
         type: String,
         required: true,
@@ -12,3 +12,6 @@ const newPost = new mongoose.Schema({
         unique: true
     }
 })
+
+const note = mongoose.model("note", newNote)
+module.exports = newNote

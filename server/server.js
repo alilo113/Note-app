@@ -58,6 +58,29 @@ app.delete("/api/notes/:id", async (req, res) => {
     }
 });
 
+app.put("/api/notes/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { title, note } = req.body;
+
+        // Find and update the note using Mongoose
+        const updatedNote = await Note.findByIdAndUpdate(
+            id,
+            { title, note }, // Update these fields
+            { new: true, runValidators: true } // Return the updated note and run validation
+        );
+
+        if (!updatedNote) {
+            return res.status(404).json({ message: "Note not found" });
+        }
+
+        res.status(200).json(updatedNote);
+    } catch (error) {
+        console.error("Error updating note:", error);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
 app.listen(port, () => {
     console.log(`Server listening on port ${port}`);
 });

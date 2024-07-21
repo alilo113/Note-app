@@ -8,32 +8,26 @@ import MenuItem from '@mui/material/MenuItem';
 import MenuList from '@mui/material/MenuList';
 
 export function Note({ post, setPost }) {
-    const [openMenu, setOpenMenu] = useState(null); // Tracks which menu is open
-    const anchorRef = useRef({});
+    const [openMenu, setOpenMenu] = useState(null);
+    const [editMode, setEditMode] = useState(null);
+    const [newTitle, setNewTitle] = useState('');
+    const [newContent, setNewContent] = useState('');
+    const anchorRef = useRef([]);
 
     const handleMenuToggle = (index) => {
-        setOpenMenu(prevOpenMenu => prevOpenMenu === index ? null : index);
+        setOpenMenu(openMenu === index ? null : index);
     };
 
     const handleCloseMenu = (event) => {
-        if (Object.values(anchorRef.current).some(ref => ref && ref.contains(event.target))) {
+        if (anchorRef.current[openMenu]?.contains(event.target)) {
             return;
         }
         setOpenMenu(null);
     };
 
-    function handleListKeyDown(event) {
-        if (event.key === 'Tab') {
-            event.preventDefault();
-            setOpenMenu(null);
-        } else if (event.key === 'Escape') {
-            setOpenMenu(null);
-        }
-    }
-
     useEffect(() => {
         const handleOutsideClick = (event) => {
-            if (Object.values(anchorRef.current).every(ref => !ref || !ref.contains(event.target))) {
+            if (anchorRef.current.every(ref => !ref?.contains(event.target))) {
                 setOpenMenu(null);
             }
         };
@@ -42,39 +36,68 @@ export function Note({ post, setPost }) {
         return () => {
             document.removeEventListener('mousedown', handleOutsideClick);
         };
-    }, []);
+    }, [openMenu]);
 
-    async function handleDelete(id) {
+    const handleDelete = async (id) => {
         try {
-            // Send a DELETE request to the API endpoint
             const response = await fetch(`/api/notes/${id}`, {
                 method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
             });
-    
-            // throw an erro if the req not successful
+
             if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.error || 'An error occurred while deleting the note');
+                throw new Error('An error occurred while deleting the note');
             }
-    
-            // Update the post state if successful
-            setPost((currentPost) => currentPost.filter(post => post._id !== id));
+
+            setPost(post.filter(note => note._id !== id));
         } catch (error) {
             console.error('Delete failed:', error);
-            // Optionally, show a user-friendly error message
         }
-    }    
+    };
+
+    const handleEdit = (index) => {
+        setEditMode(index);
+        setNewTitle(post[index].title);
+        setNewContent(post[index].note);
+    };
+
+    const handleSave = async (id) => {
+        try {
+            const response = await fetch(`/api/notes/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ title: newTitle, note: newContent }),
+            });
+
+            if (!response.ok) {
+                throw new Error('An error occurred while updating the note');
+            }
+
+            const updatedNote = await response.json();
+            setPost(post.map(note => note._id === id ? updatedNote : note));
+            setEditMode(null);
+        } catch (error) {
+            console.error('Save failed:', error);
+        }
+    };
 
     return (
         <div className="mt-6 w-full flex flex-wrap gap-4">
             {post.length > 0 ? (
                 post.map((note, index) => (
-                    <div key={index} className="bg-white p-4 rounded shadow min-w-[200px] max-w-[400px]">
+                    <div key={note._id} className="bg-white p-4 rounded shadow min-w-[200px] max-w-[400px]">
                         <div className="flex justify-between items-center">
-                            <h3 className="text-xl font-bold">{note.title}</h3>
+                            {editMode === index ? (
+                                <input 
+                                    type="text"
+                                    placeholder="Title..."
+                                    value={newTitle}
+                                    onChange={(e) => setNewTitle(e.target.value)}
+                                    className="w-full mb-2 border rounded p-2"
+                                />
+                            ) : (
+                                <h3 className="text-xl font-bold">{note.title}</h3>
+                            )}
                             <Button
                                 ref={el => anchorRef.current[index] = el}
                                 aria-controls={openMenu === index ? 'menu-list-grow' : undefined}
@@ -94,8 +117,8 @@ export function Note({ post, setPost }) {
                                     <Grow {...TransitionProps} style={{ transformOrigin: 'center top' }}>
                                         <Paper>
                                             <ClickAwayListener onClickAway={handleCloseMenu}>
-                                                <MenuList autoFocusItem={openMenu === index} id="menu-list-grow" onKeyDown={handleListKeyDown}>
-                                                    <MenuItem onClick={() => alert(`Edit ${note.title} clicked`)}>Edit</MenuItem>
+                                                <MenuList autoFocusItem={openMenu === index} id="menu-list-grow">
+                                                    <MenuItem onClick={() => handleEdit(index)}>Edit</MenuItem>
                                                     <MenuItem onClick={() => handleDelete(note._id)}>Delete</MenuItem>
                                                 </MenuList>
                                             </ClickAwayListener>
@@ -104,7 +127,25 @@ export function Note({ post, setPost }) {
                                 )}
                             </Popper>
                         </div>
-                        <p dangerouslySetInnerHTML={{ __html: note.note }}></p>
+                        {editMode === index ? (
+                            <div>
+                                <textarea
+                                    value={newContent}
+                                    onChange={(e) => setNewContent(e.target.value)}
+                                    rows={5}
+                                    className="w-full border rounded p-2"
+                                />
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    onClick={() => handleSave(note._id)}
+                                >
+                                    Save
+                                </Button>
+                            </div>
+                        ) : (
+                            <p>{note.note}</p>
+                        )}
                     </div>
                 ))
             ) : (

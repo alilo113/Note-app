@@ -17,10 +17,10 @@ export function Home() {
                         </button>
                     </div>
                     <div className="flex gap-1">
-                        <Link to="/login" className="bg-blue-600 text-white p-2 rounded hover:bg-blue-800">
+                        <Link to="/log-in" className="bg-blue-600 text-white p-2 rounded hover:bg-blue-800">
                             Log in
                         </Link>
-                        <Link to="/signup" className="bg-blue-600 text-white p-2 rounded hover:bg-blue-800">
+                        <Link to="/sign-up" className="bg-blue-600 text-white p-2 rounded hover:bg-blue-800">
                             Sign up
                         </Link>
                     </div>

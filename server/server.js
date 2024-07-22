@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const Note = require('./module/note'); // Import the model, not the schema
 const bodyParser = require('body-parser');
 const cors = require('cors');
-
+const user = require("./module/users")
 const app = express();
 const port = 3000;
 
@@ -80,6 +80,19 @@ app.put("/api/notes/:id", async (req, res) => {
         res.status(500).json({ message: "Server error" });
     }
 });
+
+app.post("/sign-up", async (req, res) => {
+    try {
+        const {username, email, password} = req.body
+        const newUser = new user({Username: username, Email: email, Password: password})
+        console.log(newUser)
+        await newUser.save()
+        res.status(200).send({message: "User created"})
+    } catch (error) {
+        res.status(500).send({message: "faild to create user"})
+        console.log(error)
+    }
+})
 
 app.listen(port, () => {
     console.log(`Server listening on port ${port}`);

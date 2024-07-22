@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { Note } from "./note";
+import { useNavigate, Link } from "react-router-dom";
+import { Note } from "./note"
 import Button from '@mui/material/Button';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
 import Grow from '@mui/material/Grow';
@@ -52,8 +52,8 @@ export function Home() {
                         className="p-2 border rounded" 
                         placeholder="Search bar..." 
                     />
-                    <button className="p-2 bg-blue-500 text-white rounded hover:bg-blue-600">Log-in</button>
-                    <button className="p-2 bg-blue-500 text-white rounded hover:bg-blue-600">Sign-up</button>
+                    <Link to="/log-in" className="p-2 bg-blue-500 text-white rounded hover:bg-blue-600">Log-in</Link>
+                    <Link to="/sign-up" className="p-2 bg-blue-500 text-white rounded hover:bg-blue-600">Sign-up</Link>
                 </div>
                 <Note post={post} setPost={setPost} />
                 <div 

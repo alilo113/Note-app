@@ -14,18 +14,46 @@ mongoose.connect("mongodb://127.0.0.1/noteUsers")
     .catch((error) => console.log("Database connection error:", error));
 
 // Sign-up route
-app.post("/sign-up", async (req, res) => {
+app.post('/sign-up', async (req, res) => {
+    const { username, email, password } = req.body;
+
     try {
-        const { username, password, email } = req.body;
-        const newUser = new User({ username, password, email });
-        console.log(newUser);
+        // Check if user already exists
+        const existingUser = await User.findOne({ username });
+        if (existingUser) {
+            return res.status(400).json({ error: 'Username already exists' });
+        }
+
+        // Create and save new user
+        const newUser = new User({ username, email, password });
         await newUser.save();
-        res.status(200).send("User created");
+
+        res.status(201).json({ message: 'User created successfully' });
     } catch (error) {
-        console.error("Error creating user:", error);
-        res.status(500).send("Failed to create user");
+        if (error.code === 11000) {
+            return res.status(400).json({ error: 'Username already exists' });
+        }
+        console.error('Error creating user:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 });
 
-// Start the server
+app.post("/log-in", async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        // Find the user by email
+        const userExist = await User.findOne({ email });
+
+        if (userExist && await userExist.comparePassword(password)) {
+            res.json({ username: userExist.username }); // Sending username if login is successful
+        } else {
+            res.status(401).send("Invalid credentials");
+        }
+    } catch (error) {
+        console.error("Login error:", error);
+        res.status(500).send("Internal Server Error");
+    }
+});
+
 app.listen(port, () => console.log(`Server listening on port ${port}`));

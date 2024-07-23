@@ -21,7 +21,7 @@ export function Signup() {
 
             const data = await res.json();  // Await JSON response
             if (res.ok) {
-                nav("/sign-up");
+                nav("/log-in");
             } else {
                 setError(data.message || "Registration failed");  // Fix typo here
             }

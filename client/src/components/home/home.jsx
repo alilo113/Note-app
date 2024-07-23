@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-export function Home() {
+export function Home({userProfile}) {
     return (
         <div className="bg-purple-900 min-h-screen flex justify-center">
             <div className="bg-purple-800 p-6 rounded-lg shadow-lg m-3">
@@ -16,14 +16,25 @@ export function Home() {
                             Search
                         </button>
                     </div>
-                    <div className="flex gap-1">
-                        <Link to="/log-in" className="bg-blue-600 text-white p-2 rounded hover:bg-blue-800">
-                            Log in
-                        </Link>
-                        <Link to="/sign-up" className="bg-blue-600 text-white p-2 rounded hover:bg-blue-800">
-                            Sign up
-                        </Link>
-                    </div>
+                    {userProfile ? (
+                        <div className="flex gap-1">
+                            <Link to="/profile" className="bg-blue-600 text-white p-2 rounded hover:bg-blue-800">
+                                profile
+                            </Link>
+                            <Link to="/sign-up" className="bg-blue-600 text-white p-2 rounded hover:bg-blue-800">
+                                log out
+                            </Link>
+                        </div>
+                    ) : (
+                        <div className="flex gap-1">
+                            <Link to="/log-in" className="bg-blue-600 text-white p-2 rounded hover:bg-blue-800">
+                                Log in
+                            </Link>
+                            <Link to="/sign-up" className="bg-blue-600 text-white p-2 rounded hover:bg-blue-800">
+                                Sign up
+                            </Link>
+                        </div>
+                    )}
                 </div>
                 <div className="bg-red-700 w-fit text-3xl rounded text-white p-4 mt-4 hover:bg-red-900 cursor-pointer">+</div>
             </div>

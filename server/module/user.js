@@ -1,39 +1,40 @@
-const mongoose = require("mongoose")
-const bcrypt = require("bcrypt")
+const mongoose = require("mongoose");
+const bcrypt = require("bcrypt");
 
 const userSchema = new mongoose.Schema({
-    username:{
+    username: {
         type: String,
-        require: true,
+        required: true,  // Corrected here
         unique: true,
     },
     email: {
         type: String,
-        require: true,
+        required: true,  // Corrected here
         unique: true
     },
     password: {
         type: String,
-        require: true,
-        unique: true
+        required: true,  // Corrected here
     }
-})
+});
 
+// Pre-save hook to hash password
 userSchema.pre("save", async function (next) {
     try {
-        if (this.isModified("password")) { 
-            const salt = await bcrypt.genSalt(10); 
-            this.password = await bcrypt.hash(this.password, salt);
+        if (this.isModified("password")) {
+            const salt = await bcrypt.genSalt(10);
+            this.password = await bcrypt.hash(this.password, salt); // Await the result of hash
         }
-        next(); 
+        next();
     } catch (error) {
         next(error);
     }
 });
 
-userSchema.comparePassword = async () => {
-    return await bcrypt.compare(password, this.password)
-}
+// Method to compare passwords
+userSchema.methods.comparePassword = async function (candidatePassword) {
+    return await bcrypt.compare(candidatePassword, this.password);
+};
 
-const user = mongoose.model("user", userSchema)
-module.exports = user
+const User = mongoose.model("User", userSchema);
+module.exports = User;

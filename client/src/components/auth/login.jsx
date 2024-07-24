@@ -8,9 +8,9 @@ export function Login({setUserProfile}) {
     const nav = useNavigate()
     
     async function handleSubmit(e) {
-        e.preventDefault();
+        e.preventDefault(); // Prevent the default form submission
+    
         try {
-            // Await the fetch call and then process the response
             const response = await fetch("http://localhost:3000/log-in", {
                 method: "POST",
                 headers: {
@@ -19,23 +19,25 @@ export function Login({setUserProfile}) {
                 body: JSON.stringify({ email, password }),
             });
     
-            // Await the response.json() call
             const data = await response.json();
     
             if (response.ok) {
-                nav("/");
-                setUserProfile(data.username);
-                localStorage.setItem("username", data.username);
+                // On successful login, navigate and store user data
+                nav("/"); // Redirect to home or another page
+                setUserProfile(data.username); // Update user profile state
+                localStorage.setItem("username", data.username); // Store username in localStorage
+                localStorage.setItem("userID", data.userID); // Store userID in localStorage
             } else {
+                // On failure, set error message
                 setError(data.message || "Login failed");
             }
         } catch (error) {
+            // Handle fetch or network errors
             console.error('Fetch error:', error);
             setError("Something went wrong");
         }
     }
-    
-
+        
     return (
         <div className="flex justify-center items-center min-h-screen bg-purple-900">
             <div className="w-full max-w-md p-8 bg-purple-800 shadow-lg rounded-lg">

@@ -3,39 +3,52 @@ import { useNavigate } from "react-router-dom";
 
 export function Newnote() {
     const [content, setContent] = useState("");
+    const [error, setError] = useState("")
     const nav = useNavigate();
 
-    async function handleSubmit(event) {
-        event.preventDefault(); // Prevent the form from submitting the default way
-
+    async function handleSubmit(e) {
+        e.preventDefault();
+    
         try {
-            const res = await fetch("http://localhost:3000/newnote", {
+            const userID = localStorage.getItem("userID"); // Retrieve userID from localStorage
+            const trimmedContent = content.trim(); // Trim content to avoid empty spaces
+    
+            if (!userID || !trimmedContent) {
+                setError("Content is missing")
+                return
+            }
+    
+            const response = await fetch("http://localhost:3000/newnote", {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json" // Fixed typo here
+                    "Content-Type": "application/json",
                 },
-                body: JSON.stringify({ content })
+                body: JSON.stringify({ user: userID, content: trimmedContent }),
             });
-
-            if (!res.ok) {
-                throw new Error("Network response was not ok");
+    
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(`Network response was not ok: ${errorData.message || "Unknown error"}`);
             }
-
-            const data = await res.json(); // Corrected `re` to `res`
-
-            // Optional: Handle response data if needed
-
+    
+            const data = await response.json();
             nav("/"); // Navigate to home page
         } catch (error) {
-            console.error("Error submitting the note:", error);
-            // Optional: Show error message to the user
+            console.error("Error submitting the note:", error.message);
         }
     }
-
+    
     return (
         <div className="bg-purple-900 min-h-screen flex justify-center items-center">
             <div className="p-4 max-w-md mx-auto bg-purple-800">
                 <h1 className="text-2xl font-bold mb-4 text-white">New Note</h1>
+                {error ? (
+                    <div className="bg-red-700 mb-4 text-white p-3 rounded">
+                        {error}
+                    </div>
+                ):(
+                    <></>
+                )}
                 <form className="space-y-4" onSubmit={handleSubmit}>
                     <textarea
                         value={content}

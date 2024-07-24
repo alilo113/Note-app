@@ -49,26 +49,47 @@ app.post("/log-in", async (req, res) => {
         const userExist = await User.findOne({ email });
 
         if (userExist && await userExist.comparePassword(password)) {
-            res.json({ username: userExist.username }); // Sending username if login is successful
+            res.json({
+                username: userExist.username,
+                userID: userExist._id.toString() // Include userID in the response
+            });
         } else {
-            res.status(401).send("Invalid credentials");
+            res.status(401).json({ message: "Invalid credentials" }); // Send a JSON response for consistency
         }
     } catch (error) {
         console.error("Login error:", error);
-        res.status(500).send("Internal Server Error");
+        res.status(500).json({ message: "Internal Server Error" }); // Send a JSON response for consistency
     }
 });
 
-// New note route
 app.post("/newnote", async (req, res) => {
     try {
-        const { content } = req.body;  // Access content from req.body
-        const newNote = new Note({ Content: content });  // Use the correct model name
+        const { user, content } = req.body;
+
+        if (!user || !content) {
+            return res.status(400).json({ error: "User ID and content are required" });
+        }
+
+        const newNote = new Note({
+            user,
+            content
+        });
+
         await newNote.save();
-        res.status(201).json({ message: "Note created successfully" });  // Send success response
+        res.status(201).json({ message: "Note created successfully" });
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Internal Server Error" });  // Send error response
+        console.error('Error creating note:', error.message);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+});
+
+app.get("/newnote", async (req, res) => {
+    try {
+        const notes = await Note.find();
+        res.status(200).json(notes);
+    } catch (error) {
+        console.log("Fetching error", error);
+        res.status(500).json({ message: "Error fetching notes", error: error.message });
     }
 });
 

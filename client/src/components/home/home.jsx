@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
-export function Home({ userProfile, setUserProfile, notes }) {
+export function Home({ userProfile, setUserProfile, content}) {
   const [open, setOpen] = useState(false);
   const anchorRef = useRef(null);
 
@@ -49,7 +49,7 @@ export function Home({ userProfile, setUserProfile, notes }) {
           <Link to="/newnote" className="bg-red-700 p-6 w-fit text-3xl rounded text-white hover:bg-red-900 cursor-pointer">+</Link>
         </div>
         <div className="mt-10">
-          <h2 className="text-2xl font-bold text-white">Your Notes</h2>
+          <h2 className="text-2xl font-bold text-white">Your Notes</h2> 
         </div>
       </div>
     </div>

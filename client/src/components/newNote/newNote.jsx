@@ -18,14 +18,21 @@ export function Newnote() {
                 body: JSON.stringify({ content: note }), // Send JSON data
             });
     
-            const data = await res.json();
+            console.log("Response status:", res.status); // Log response status
     
             if (res.ok) {
-                nav("/");
+                // Handle successful response
+                const data = await res.json();
+                console.log("Response data:", data);
+                nav("/"); // Navigate to another page
             } else {
-                setError(data.error || "An error occurred. Please try again.");
+                // Handle non-OK responses
+                const errorData = await res.json();
+                setError(errorData.error || "An error occurred. Please try again.");
             }
         } catch (error) {
+            // Catch and log network or other errors
+            console.error("Fetch error:", error);
             setError("Network error. Please try again later.");
         }
     }

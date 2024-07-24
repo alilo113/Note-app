@@ -1,13 +1,15 @@
 const express = require("express");
 const mongoose = require("mongoose");
-const User = require("./module/user"); // Ensure that your model file exports a model named 'User'
-const cors = require("cors")
+const User = require("./module/user"); // Ensure this file exports the User model
+const Note = require("./module/note"); // Make sure to use the correct model name here
+const cors = require("cors");
 const app = express();
 const port = 3000;
 
 // Middleware to parse JSON bodies
 app.use(express.json());
-app.use(cors())
+app.use(cors());
+
 // Connect to MongoDB
 mongoose.connect("mongodb://127.0.0.1/noteUsers")
     .then(() => console.log("Database connected"))
@@ -38,6 +40,7 @@ app.post('/sign-up', async (req, res) => {
     }
 });
 
+// Log-in route
 app.post("/log-in", async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -53,6 +56,19 @@ app.post("/log-in", async (req, res) => {
     } catch (error) {
         console.error("Login error:", error);
         res.status(500).send("Internal Server Error");
+    }
+});
+
+// New note route
+app.post("/newnote", async (req, res) => {
+    try {
+        const { content } = req.body;  // Access content from req.body
+        const newNote = new Note({ Content: content });  // Use the correct model name
+        await newNote.save();
+        res.status(201).json({ message: "Note created successfully" });  // Send success response
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Internal Server Error" });  // Send error response
     }
 });
 

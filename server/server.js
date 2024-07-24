@@ -58,8 +58,6 @@ app.post("/log-in", async (req, res) => {
 });
 
 app.post("/newnote", async (req, res) => {
-    console.log("Received request body:", req.body); // Log request body
-
     try {
         const { content } = req.body;
         if (!content) {
@@ -68,7 +66,7 @@ app.post("/newnote", async (req, res) => {
 
         const newNote = new note({ content });
         await newNote.save();
-        res.status(201).send("Note created!");
+        res.status(201).json({ message: "Note created successfully!" });
     } catch (error) {
         if (error.name === 'ValidationError') {
             res.status(400).json({ error: error.message });

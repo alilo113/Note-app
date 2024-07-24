@@ -2,14 +2,12 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 export function Home({ userProfile, setUserProfile, content}) {
-  const [open, setOpen] = useState(false);
-  const anchorRef = useRef(null);
 
-  const handleLogout = () => {
+  function handleLogout(){
     setUserProfile("");
     localStorage.removeItem("username");
     localStorage.removeItem("email");
-  };
+  }
 
   return (
     <div className="bg-purple-900 min-h-screen flex justify-center">
@@ -50,6 +48,7 @@ export function Home({ userProfile, setUserProfile, content}) {
         </div>
         <div className="mt-10">
           <h2 className="text-2xl font-bold text-white">Your Notes</h2> 
+          {content}
         </div>
       </div>
     </div>

@@ -9,7 +9,7 @@ import { Newnote } from "./components/newNote/newNote";
 function App() {
   const [userProfile, setUserProfile] = useState("");
   const [email, setEmail] = useState(""); // Add email state if needed
-  const [content, setContent] = useState("");
+  const [content, setContent] = useState([]); // Initialize as an empty array
 
   useEffect(() => {
     async function fetchData() {
@@ -23,7 +23,8 @@ function App() {
 
         if (res.ok) {
           const data = await res.json();
-          setContent(data.content); // Set content based on response
+          console.log(data);
+          setContent(data); // Set content as the response data
         } else {
           console.error("Failed to fetch note");
         }

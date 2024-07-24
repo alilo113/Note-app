@@ -23,7 +23,6 @@ function App() {
 
         if (res.ok) {
           const data = await res.json();
-          console.log(data);
           setContent(data); // Set content as the response data
         } else {
           console.error("Failed to fetch note");

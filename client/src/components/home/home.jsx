@@ -1,6 +1,5 @@
+import React from "react"
 import { Link } from 'react-router-dom';
-import { Menu, MenuButton, MenuItems, MenuList, MenuItem, MenuDivider } from '@chakra-ui/react';
-import { ChevronDownIcon } from '@chakra-ui/icons';
 
 export function Home({ userProfile, setUserProfile, content }) {
 
@@ -50,34 +49,14 @@ export function Home({ userProfile, setUserProfile, content }) {
         <div className="mt-10">
           <h2 className="text-2xl font-bold text-white">Your Notes</h2> 
           {content && content.length > 0 ? (
-            <div>
-              <ul className="list-disc pl-5 text-white">
+              <div className="list-disc pl-5 text-white">
                 {content.map((note) => (
-                  <li key={note._id} className="mb-2 bg-white text-black p-3 w-fit">{note.content}</li>
+                  <div key={note._id} className="mb-2 bg-white text-black p-3 w-fit flex items-center">
+                    <div>{note.content}</div>
+                    <div>...</div>
+                  </div>
                 ))}
-              </ul>
-              <Menu>
-                <MenuButton
-                  px={4}
-                  py={2}
-                  transition='all 0.2s'
-                  borderRadius='md'
-                  borderWidth='1px'
-                  _hover={{ bg: 'gray.400' }}
-                  _expanded={{ bg: 'blue.400' }}
-                  _focus={{ boxShadow: 'outline' }}
-                >
-                  File <ChevronDownIcon />
-                </MenuButton>
-                <MenuList>
-                  <MenuItem>New File</MenuItem>
-                  <MenuItem>New Window</MenuItem>
-                  <MenuDivider />
-                  <MenuItem>Open...</MenuItem>
-                  <MenuItem>Save File</MenuItem>
-                </MenuList>
-              </Menu>
-            </div>
+              </div>
           ) : (
             <p className="text-white">No notes available</p>
           )}

@@ -1,10 +1,12 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-export function Home({userProfile, setUserProfile}) {
+export function Home({ userProfile, setUserProfile, notes }) {
     
-    function handleLogout(){
-        setUserProfile("")
+    function handleLogout() {
+        setUserProfile("");
+        localStorage.removeItem("username");
+        localStorage.removeItem("email");
     }
 
     return (
@@ -24,10 +26,10 @@ export function Home({userProfile, setUserProfile}) {
                     {userProfile ? (
                         <div className="flex gap-1">
                             <Link to="/profile" className="bg-blue-600 text-white p-2 rounded hover:bg-blue-800">
-                                profile
+                                Profile
                             </Link>
                             <button onClick={handleLogout} className="bg-blue-600 text-white p-2 rounded hover:bg-blue-800">
-                                log out
+                                Log out
                             </button>
                         </div>
                     ) : (
@@ -41,7 +43,24 @@ export function Home({userProfile, setUserProfile}) {
                         </div>
                     )}
                 </div>
-                <div className="bg-red-700 w-fit text-3xl rounded text-white p-4 mt-4 hover:bg-red-900 cursor-pointer">+</div>
+                <div className="mt-10">
+                    <Link to="/newnote" className="bg-red-700 p-6 w-fit text-3xl rounded text-white hover:bg-red-900 cursor-pointer">+</Link>
+                </div>
+                <div className="mt-10">
+                    <h2 className="text-2xl font-bold text-white">Your Notes</h2>
+                    <ul className="mt-4 space-y-2">
+                        {notes.length === 0 ? (
+                            <li className="text-white">No notes available.</li>
+                        ) : (
+                            notes.map((note) => (
+                                <li key={note._id} className="bg-purple-700 p-4 rounded text-white shadow">
+                                    <h3 className="text-xl font-semibold">{note.title}</h3>
+                                    <p>{note.content}</p>
+                                </li>
+                            ))
+                        )}
+                    </ul>
+                </div>
             </div>
         </div>
     );

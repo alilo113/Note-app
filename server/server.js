@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const User = require("./module/user"); // Ensure that your model file exports a model named 'User'
+const note = require("./module/note");
 const cors = require("cors")
 const app = express();
 const port = 3000;
@@ -53,6 +54,36 @@ app.post("/log-in", async (req, res) => {
     } catch (error) {
         console.error("Login error:", error);
         res.status(500).send("Internal Server Error");
+    }
+});
+
+app.post("/newnote", async (req, res) => {
+    try {
+        const { content } = req.body;
+        if (!content) {
+            return res.status(400).json({ error: 'Content is required' });
+        }
+
+        const newNote = new note({ content });
+        await newNote.save();
+        res.status(201).send("Note created!!!");
+    } catch (error) {
+        if (error.name === 'ValidationError') {
+            res.status(400).json({ error: error.message });
+        } else {
+            console.error(error);
+            res.status(500).json({ error: "Internal Server Error" });
+        }
+    }
+});
+
+app.get("/notes", async (req, res) => {
+    try {
+        const notes = await note.find({});
+        res.json(notes);
+    } catch (error) {
+        console.error("Error fetching notes:", error);
+        res.status(500).json({ error: "Internal Server Error" });
     }
 });
 

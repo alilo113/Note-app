@@ -1,7 +1,12 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-export function Home({userProfile}) {
+export function Home({userProfile, setUserProfile}) {
+    
+    function handleLogout(){
+        setUserProfile("")
+    }
+
     return (
         <div className="bg-purple-900 min-h-screen flex justify-center">
             <div className="bg-purple-800 p-6 rounded-lg shadow-lg m-3">
@@ -21,9 +26,9 @@ export function Home({userProfile}) {
                             <Link to="/profile" className="bg-blue-600 text-white p-2 rounded hover:bg-blue-800">
                                 profile
                             </Link>
-                            <Link to="/sign-up" className="bg-blue-600 text-white p-2 rounded hover:bg-blue-800">
+                            <button onClick={handleLogout} className="bg-blue-600 text-white p-2 rounded hover:bg-blue-800">
                                 log out
-                            </Link>
+                            </button>
                         </div>
                     ) : (
                         <div className="flex gap-1">

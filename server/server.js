@@ -54,14 +54,15 @@ app.post("/log-in", async (req, res) => {
                 userID: userExist._id.toString() // Include userID in the response
             });
         } else {
-            res.status(401).json({ message: "Invalid credentials" }); // Send a JSON response for consistency
+            res.status(401).json({ message: "Invalid credentials" });
         }
     } catch (error) {
         console.error("Login error:", error);
-        res.status(500).json({ message: "Internal Server Error" }); // Send a JSON response for consistency
+        res.status(500).json({ message: "Internal Server Error" });
     }
 });
 
+// Create new note route
 app.post("/newnote", async (req, res) => {
     try {
         const { user, content } = req.body;
@@ -83,13 +84,28 @@ app.post("/newnote", async (req, res) => {
     }
 });
 
-app.get("/newnote", async (req, res) => {
+// Fetch notes route
+app.get("/notes", async (req, res) => {
     try {
         const notes = await Note.find();
-        res.status(200).json(notes);
+        res.status(200).json({ notes });
     } catch (error) {
         console.log("Fetching error", error);
         res.status(500).json({ message: "Error fetching notes", error: error.message });
+    }
+});
+
+app.delete('/notes/:id', async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const result = await Note.findByIdAndDelete(id);
+        if (!result) {
+            return res.status(404).send('Note not found');
+        }
+        res.status(200).send('Note deleted successfully');
+    } catch (error) {
+        res.status(500).send('Error deleting note');
     }
 });
 

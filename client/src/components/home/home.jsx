@@ -5,11 +5,7 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
-  MenuItemOption,
-  MenuGroup,
-  MenuOptionGroup,
-  MenuDivider,
-} from '@chakra-ui/react'
+} from '@chakra-ui/react';
 
 export function Home({ userProfile, setUserProfile }) {
   const [notes, setNotes] = useState([]); // Initialize as an empty array
@@ -36,6 +32,27 @@ export function Home({ userProfile, setUserProfile }) {
     setUserProfile("");
     localStorage.removeItem("username");
     localStorage.removeItem("email");
+  }
+
+  async function handleDelete(id) {
+    try {
+      const response = await fetch(`http://localhost:3000/notes/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to delete note');
+      }
+
+      // Remove the deleted note from the state
+      setNotes((prevNotes) => prevNotes.filter((note) => note._id !== id));
+    } catch (error) {
+      console.error('Error deleting note:', error);
+    }
+  }
+
+  function handleEdit() {
+    // Handle edit functionality here
   }
 
   return (
@@ -82,14 +99,14 @@ export function Home({ userProfile, setUserProfile }) {
               {notes.map((note) => (
                 <div
                   key={note._id}
-                  className="relative mb-2 bg-white text-black p-3 "
+                  className="relative mb-2 bg-white text-black p-3"
                 >
                   <div className="break-words">{note.content}</div>
                   <Menu>
                     <MenuButton className="absolute top-2 right-2 text-3xl cursor-pointer">...</MenuButton>
                     <MenuList>
-                      <MenuItem>Edit</MenuItem>
-                      <MenuItem>Delete</MenuItem>
+                      <MenuItem onClick={() => handleEdit(note._id)}>Edit</MenuItem>
+                      <MenuItem onClick={() => handleDelete(note._id)}>Delete</MenuItem>
                     </MenuList>
                   </Menu>
                 </div>

@@ -105,7 +105,22 @@ app.delete('/notes/:id', async (req, res) => {
         }
         res.status(200).send('Note deleted successfully');
     } catch (error) {
-        res.status(500).send('Error deleting note');
+        res.status(500).send('Error deleting note', error);
+    }
+});
+
+app.put("/notes/:id", async (req, res) => {
+    const { id } = req.params;
+    const updateData = req.body;
+
+    try {
+        const NoteUpdated = await Note.findByIdAndUpdate(id, updateData, { new: true });
+        if (!NoteUpdated) {
+            return res.status(404).json({ message: "No note found to update" });
+        }
+        res.status(200).json({ message: "Note updated", note: NoteUpdated });
+    } catch (error) {
+        res.status(500).json({ message: "Error updating note", error: error.message });
     }
 });
 

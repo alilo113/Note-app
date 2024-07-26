@@ -10,20 +10,34 @@ export function Home({ userProfile, setUserProfile }) {
 
   useEffect(() => {
     const fetchNotes = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.error("No token found");
+        return;
+      }
+  
       try {
-        const response = await fetch("http://localhost:3000/notes");
+        const response = await fetch("http://localhost:3000/notes", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          }
+        });
+  
         if (!response.ok) {
           throw new Error("Failed to fetch notes");
         }
+  
         const data = await response.json();
         setNotes(data.notes || []); // Ensure notes is set to an empty array if data.notes is undefined
       } catch (error) {
         console.error("Error fetching notes:", error);
       }
     };
-
+  
     fetchNotes();
-  }, []);
+  }, []);  
 
   function handleLogout() {
     setUserProfile(null); // Use null or undefined for userProfile
@@ -35,6 +49,7 @@ export function Home({ userProfile, setUserProfile }) {
     try {
       const response = await fetch(`http://localhost:3000/notes/${id}`, {
         method: 'DELETE',
+
       });
 
       if (!response.ok) {

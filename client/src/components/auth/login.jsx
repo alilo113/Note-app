@@ -1,14 +1,18 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-export function Login({setUserProfile}) {
-    const [email, setEmail] = useState("")
-    const [password, setPassword] = useState("")
-    const [error, setError] = useState("")
-    const nav = useNavigate()
-    
+export function Login({ setUserProfile }) {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false); // Add loading state
+    const nav = useNavigate();
+
     async function handleSubmit(e) {
         e.preventDefault(); // Prevent the default form submission
+    
+        setLoading(true); // Set loading to true
+        setError(""); // Clear any previous errors
     
         try {
             const response = await fetch("http://localhost:3000/log-in", {
@@ -18,26 +22,29 @@ export function Login({setUserProfile}) {
                 },
                 body: JSON.stringify({ email, password }),
             });
-    
-            const data = await response.json();
-    
+
             if (response.ok) {
-                // On successful login, navigate and store user data
-                nav("/"); // Redirect to home or another page
-                setUserProfile(data.username); // Update user profile state
-                localStorage.setItem("username", data.username); // Store username in localStorage
-                localStorage.setItem("userID", data.userID); // Store userID in localStorage
+                const data = await response.json();
+                localStorage.setItem("token", data.token);
+                // Call setUserProfile if needed
+                console.log("Stored token:", localStorage.getItem("token"));
+                if (data.userProfile) {
+                    setUserProfile(data.userProfile);
+                }
+                // Redirect after successful login
+                nav("/");
             } else {
-                // On failure, set error message
-                setError(data.message || "Login failed");
+                const data = await response.json();
+                throw new Error(data.message || "Login failed");
             }
         } catch (error) {
-            // Handle fetch or network errors
-            console.error('Fetch error:', error);
-            setError("Something went wrong");
+            console.error('Login error:', error);
+            setError(error.message || "Something went wrong");
+        } finally {
+            setLoading(false); // Set loading to false
         }
-    }
-        
+    }    
+
     return (
         <div className="flex justify-center items-center min-h-screen bg-purple-900">
             <div className="w-full max-w-md p-8 bg-purple-800 shadow-lg rounded-lg">
@@ -65,11 +72,13 @@ export function Login({setUserProfile}) {
                             onChange={(e) => setPassword(e.target.value)}
                         />
                     </div>
+                    {error && <p className="text-red-500 mb-4">{error}</p>} {/* Display error message */}
                     <button
                         type="submit"
                         className="w-full py-2 px-4 bg-blue-500 text-white font-bold rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        disabled={loading} // Disable button while loading
                     >
-                        Log In
+                        {loading ? "Logging In..." : "Log In"}
                     </button>
                 </form>
             </div>

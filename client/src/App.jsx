@@ -11,32 +11,37 @@ function App() {
   const [email, setEmail] = useState("");
 
   useEffect(() => {
-    async function fetchUserProfile() {
+    const fetchUserProfile = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.error("No token found");
+        return;
+      }
+  
       try {
-        const res = await fetch("http://localhost:3000/notes", { // Adjust the endpoint as necessary
+        const res = await fetch("http://localhost:3000/profile", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${localStorage.getItem("token")}` // Add token if needed
+            "Authorization": `Bearer ${token}`
           }
         });
-
+  
         if (res.ok) {
           const data = await res.json();
-          console.log(data); 
-          setUserProfile(data.profile); // Set userProfile based on response data
-          setEmail(data.email); // Assuming email is also returned in the response
+          setUserProfile(data.profile);
+          setEmail(data.email);
         } else {
-          console.error("Failed to fetch user profile");
+          console.error(`Failed to fetch user profile. Status: ${res.status}`);
         }
       } catch (error) {
         console.error("Error fetching user profile:", error);
       }
-    }
-
+    };
+  
     fetchUserProfile();
   }, []);
-
+  
   return (
     <Router>
       <Routes>

@@ -33,7 +33,7 @@ app.post('/sign-up', async (req, res) => {
         res.status(201).json({ message: 'User created successfully' });
     } catch (error) {
         if (error.code === 11000) {
-            return res.status(400).json({ error: 'Username already exists' });
+            return res.status(400).json({ error: 'Username or email already exists' });
         }
         console.error('Error creating user:', error);
         res.status(500).json({ error: 'Internal Server Error' });
@@ -71,6 +71,12 @@ app.post("/newnote", async (req, res) => {
             return res.status(400).json({ error: "User ID and content are required" });
         }
 
+        // Ensure the user ID is valid
+        const existingUser = await User.findById(user);
+        if (!existingUser) {
+            return res.status(400).json({ error: "Invalid user ID" });
+        }
+
         const newNote = new Note({
             user,
             content
@@ -87,7 +93,7 @@ app.post("/newnote", async (req, res) => {
 // Fetch notes route
 app.get("/notes", async (req, res) => {
     try {
-        const notes = await Note.find();
+        const notes = await Note.find().populate('user', 'username email');
         res.status(200).json({ notes });
     } catch (error) {
         console.log("Fetching error", error);
@@ -105,7 +111,7 @@ app.delete('/notes/:id', async (req, res) => {
         }
         res.status(200).send('Note deleted successfully');
     } catch (error) {
-        res.status(500).send('Error deleting note', error);
+        res.status(500).send('Error deleting note: ' + error.message);
     }
 });
 

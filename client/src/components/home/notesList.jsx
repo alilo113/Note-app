@@ -9,12 +9,15 @@ export function NoteList({
   handleStartEdit,
   handleSaveEdit,
   handleCancelEdit,
-  handleDelete
+  handleDelete,
+  userProfile
 }) {
   return (
     <div className="mt-10">
       <h2 className="text-2xl font-bold text-white mb-3">Your Notes</h2>
-      {notes.length > 0 ? (
+      {!userProfile ? (
+        <p className="text-white">Please log in to view your notes.</p>
+      ) : notes.length > 0 ? (
         <div className="list-disc pl-5 text-white">
           {notes.map((note) => (
             <div

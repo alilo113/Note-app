@@ -10,7 +10,6 @@ const noteSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  // other fields...
 });
 
 const Note = mongoose.model("Note", noteSchema);

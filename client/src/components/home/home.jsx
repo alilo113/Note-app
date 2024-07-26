@@ -16,7 +16,7 @@ export function Home({ userProfile, setUserProfile }) {
           throw new Error("Failed to fetch notes");
         }
         const data = await response.json();
-        setNotes(data.notes);
+        setNotes(data.notes || []); // Ensure notes is set to an empty array if data.notes is undefined
       } catch (error) {
         console.error("Error fetching notes:", error);
       }
@@ -26,7 +26,7 @@ export function Home({ userProfile, setUserProfile }) {
   }, []);
 
   function handleLogout() {
-    setUserProfile("");
+    setUserProfile(null); // Use null or undefined for userProfile
     localStorage.removeItem("username");
     localStorage.removeItem("email");
   }
@@ -94,6 +94,7 @@ export function Home({ userProfile, setUserProfile }) {
           <Link to="/newnote" className="bg-red-700 p-6 w-fit text-3xl rounded text-white hover:bg-red-900 cursor-pointer">+</Link>
         </div>
         <NoteList
+          userProfile={userProfile}
           notes={notes}
           editMode={editMode}
           editedContent={editedContent}

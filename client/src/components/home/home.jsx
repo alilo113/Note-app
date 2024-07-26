@@ -47,9 +47,19 @@ export function Home({ userProfile, setUserProfile }) {
 
   async function handleDelete(id) {
     try {
+      const token = localStorage.getItem("token"); // Get the token from localStorage
+
+      if (!token) {
+        console.error("No token found");
+        return;
+      }
+
       const response = await fetch(`http://localhost:3000/notes/${id}`, {
         method: 'DELETE',
-
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}` // Add the Authorization header
+        },
       });
 
       if (!response.ok) {
@@ -64,10 +74,18 @@ export function Home({ userProfile, setUserProfile }) {
 
   async function handleSaveEdit(id) {
     try {
+      const token = localStorage.getItem("token"); // Get the token from localStorage
+
+      if (!token) {
+        console.error("No token found");
+        return;
+      }
+
       const response = await fetch(`http://localhost:3000/notes/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}` // Add the Authorization header
         },
         body: JSON.stringify({ content: editedContent }),
       });

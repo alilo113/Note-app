@@ -11,6 +11,13 @@ export function Home({ userProfile, setUserProfile }) {
   const [query, setQuery] = useState("")
   const [result, setResult] = useState([])
 
+  const filteredNotes = notes.filter(note => {
+    return (
+      note.title.toLowerCase().includes(query.toLowerCase()) ||
+      note.content.toLowerCase().includes(query.toLowerCase())
+    );
+  });
+
   useEffect(() => {
     const fetchNotes = async () => {
       const token = localStorage.getItem("token");
@@ -78,38 +85,39 @@ export function Home({ userProfile, setUserProfile }) {
 
   async function handleSaveEdit(id) {
     try {
-      const token = localStorage.getItem("token"); // Get the token from localStorage
-
+      const token = localStorage.getItem("token");
+  
       if (!token) {
         console.error("No token found");
         return;
       }
-
+  
       const response = await fetch(`http://localhost:3000/notes/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}` // Add the Authorization header
+          "Authorization": `Bearer ${token}`
         },
         body: JSON.stringify({ content: editedContent, title: editTitle }),
       });
-
+  
       if (!response.ok) {
         throw new Error("Failed to update note");
       }
-
+  
       setNotes((prevNotes) =>
         prevNotes.map((note) =>
-          note._id === id ? { ...note, content: editedContent, title: editT } : note
+          note._id === id ? { ...note, content: editedContent, title: editTitle } : note
         )
       );
-
+  
       setEditMode(null);
       setEditedContent("");
     } catch (error) {
       console.error("Error updating note:", error);
     }
   }
+  
 
   function handleStartEdit(note) {
     setEditMode(note._id);
@@ -123,40 +131,11 @@ export function Home({ userProfile, setUserProfile }) {
     setEditedTitle("")
   }
 
-  async function handleSearch(e) {
-    e.preventDefault();
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        console.error("No token found");
-        return;
-      }
-  
-      const response = await fetch(`http://localhost:3000/search?query=${encodeURIComponent(query)}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        }
-      });
-  
-      if (!response.ok) {
-        throw new Error("Failed to fetch search results");
-      }
-  
-      const data = await response.json();
-      console.log("Search Results:", data); // Log the data for debugging
-      setResult(data);
-    } catch (error) {
-      console.error('Error fetching search results:', error);
-    }
-  }
-
   return (
     <div className="bg-purple-900 min-h-screen flex flex-col items-center">
       <div className="bg-purple-800 p-6 rounded-lg shadow-lg w-full max-w-4xl mt-4">
-        <div className="flex flex-col md:flex-row md:items-center justify-between">
-          <Header userProfile={userProfile} handleLogout={handleLogout} handleSearch={handleSearch} query={query} setQuery={setQuery}/>
+        <div>
+          <Header userProfile={userProfile} handleLogout={handleLogout} notes={notes} query={query} setQuery={setQuery}/>
         </div>
         <div className="mt-10">
           <Link to="/newnote" className="bg-red-700 p-6 w-fit text-3xl rounded text-white hover:bg-red-900 cursor-pointer">+</Link>
@@ -174,6 +153,7 @@ export function Home({ userProfile, setUserProfile }) {
           editTitle={editTitle}
           setEditedTitle={setEditedTitle}
           result={result}
+          filteredNotes={filteredNotes}
         />
       </div>
     </div>

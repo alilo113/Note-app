@@ -156,14 +156,4 @@ app.get("/profile", auth, async (req, res) => {
     }
 });
 
-app.get("/search", auth, async (req, res) => {
-    try {
-        const { query } = req.query;
-        const result = await Note.find({ $text: { $search: query } });
-        res.json(result);
-    } catch (error) {
-        res.status(500).json({ error: "Internal server error" });
-    }
-});
-
 app.listen(port, () => console.log(`Server listening on port ${port}`));

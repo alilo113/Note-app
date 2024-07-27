@@ -13,19 +13,29 @@ export function NoteList({
   userProfile,
   editTitle,
   setEditedTitle,
-  result
+  filteredNotes, // Use filteredNotes to display filtered results
 }) {
   // Determine which data to display
-  const displayNotes = result.length > 0 ? result : notes;
+  const displayNotes = filteredNotes.length > 0 ? filteredNotes : notes;
+
+  // Render message based on notes availability
+  const renderMessage = () => {
+    if (!userProfile) {
+      return <p className="text-white">Please log in to view your notes.</p>;
+    }
+    if (displayNotes.length === 0) {
+      return <p className="text-white">No notes available</p>;
+    }
+    return null;
+  };
 
   return (
     <div className="mt-10">
-      <h2 className="text-2xl font-bold text-white mb-3">
-        {result.length > 0 ? "Search Results" : "Your Notes"}
-      </h2>
-      {!userProfile ? (
-        <p className="text-white">Please log in to view your notes.</p>
-      ) : displayNotes.length > 0 ? (
+      {filteredNotes.length > 0 && (
+        <h2 className="text-2xl font-bold text-white mb-3">Your Notes</h2>
+      )}
+      {renderMessage()}
+      {userProfile && displayNotes.length > 0 && (
         <div className="list-disc pl-5 text-white">
           {displayNotes.map((note) => (
             <div
@@ -76,8 +86,6 @@ export function NoteList({
             </div>
           ))}
         </div>
-      ) : (
-        <p className="text-white">No notes available</p>
       )}
     </div>
   );

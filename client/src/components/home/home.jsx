@@ -34,6 +34,7 @@ export function Home({ userProfile, setUserProfile }) {
   
         const data = await response.json();
         setNotes(data.notes || []); // Ensure notes is set to an empty array if data.notes is undefined
+        console.log("Search Query:", query);
       } catch (error) {
         console.error("Error fetching notes:", error);
       }
@@ -122,20 +123,30 @@ export function Home({ userProfile, setUserProfile }) {
     setEditedTitle("")
   }
 
-  async function handleSearch(){
+  async function handleSearch(e) {
     e.preventDefault();
     try {
-      const res = await fetch(`/search?query=${query}`, {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        console.error("No token found");
+        return;
+      }
+  
+      const response = await fetch(`http://localhost:3000/search?query=${encodeURIComponent(query)}`, {
         method: "GET",
-        header: {
-          "Content-Type": "applicaion/json",
+        headers: {
+          "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`
         }
-      })
-
-      const data = res.json()
-      setResult(data)
-      console.log(result)
+      });
+  
+      if (!response.ok) {
+        throw new Error("Failed to fetch search results");
+      }
+  
+      const data = await response.json();
+      console.log("Search Results:", data); // Log the data for debugging
+      setResult(data);
     } catch (error) {
       console.error('Error fetching search results:', error);
     }
@@ -145,7 +156,7 @@ export function Home({ userProfile, setUserProfile }) {
     <div className="bg-purple-900 min-h-screen flex flex-col items-center">
       <div className="bg-purple-800 p-6 rounded-lg shadow-lg w-full max-w-4xl mt-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between">
-          <Header userProfile={userProfile} handleLogout={handleLogout} handleSearch={handleSearch}/>
+          <Header userProfile={userProfile} handleLogout={handleLogout} handleSearch={handleSearch} query={query} setQuery={setQuery}/>
         </div>
         <div className="mt-10">
           <Link to="/newnote" className="bg-red-700 p-6 w-fit text-3xl rounded text-white hover:bg-red-900 cursor-pointer">+</Link>

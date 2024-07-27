@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from 'react-router-dom';
 
-export function Header({ userProfile, handleLogout, handleSearch }) {
+export function Header({ userProfile, handleLogout, handleSearch, query, setQuery }) {
   return (
     <div className="flex flex-col md:flex-row md:items-center justify-between">
       <form onSubmit={handleSearch} className="flex gap-2 mb-4 md:mb-0 mr-10">

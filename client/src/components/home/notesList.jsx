@@ -9,20 +9,25 @@ export function NoteList({
   handleStartEdit,
   handleSaveEdit,
   handleCancelEdit,
-  handleDelete,
+  handleDelete,  
   userProfile,
-  editTitle={editTitle},
-  setEditedTitle={setEditedTitle},
+  editTitle,
+  setEditedTitle,
   result
 }) {
+  // Determine which data to display
+  const displayNotes = result.length > 0 ? result : notes;
+
   return (
     <div className="mt-10">
-      <h2 className="text-2xl font-bold text-white mb-3">Your Notes</h2>
+      <h2 className="text-2xl font-bold text-white mb-3">
+        {result.length > 0 ? "Search Results" : "Your Notes"}
+      </h2>
       {!userProfile ? (
         <p className="text-white">Please log in to view your notes.</p>
-      ) : notes.length > 0 ? (
+      ) : displayNotes.length > 0 ? (
         <div className="list-disc pl-5 text-white">
-          {notes.map((note) => (
+          {displayNotes.map((note) => (
             <div
               key={note._id}
               className="relative mb-2 bg-white text-black p-3"
@@ -57,7 +62,7 @@ export function NoteList({
                 </div>
               ) : (
                 <div>
-                  <h1 className="text-3xl mb-3 text-bold">{note.title}</h1>
+                  <h1 className="text-3xl mb-3 font-bold">{note.title}</h1>
                   <div className="break-words">{note.content}</div>
                   <Menu>
                     <MenuButton className="absolute top-2 right-2 text-3xl cursor-pointer">...</MenuButton>

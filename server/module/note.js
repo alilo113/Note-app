@@ -13,6 +13,10 @@ const noteSchema = new mongoose.Schema({
   title:{
     type: String,
     required: true
+  },
+  findToSearch: {
+    type: String,
+    text: true
   }
 });
 

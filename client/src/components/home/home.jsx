@@ -7,6 +7,9 @@ export function Home({ userProfile, setUserProfile }) {
   const [notes, setNotes] = useState([]);
   const [editMode, setEditMode] = useState(null);
   const [editedContent, setEditedContent] = useState("");
+  const [editTitle, setEditedTitle] = useState("");
+  const [query, setQuery] = useState("")
+  const [result, setResult] = useState([])
 
   useEffect(() => {
     const fetchNotes = async () => {
@@ -87,7 +90,7 @@ export function Home({ userProfile, setUserProfile }) {
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}` // Add the Authorization header
         },
-        body: JSON.stringify({ content: editedContent }),
+        body: JSON.stringify({ content: editedContent, title: editTitle }),
       });
 
       if (!response.ok) {
@@ -96,7 +99,7 @@ export function Home({ userProfile, setUserProfile }) {
 
       setNotes((prevNotes) =>
         prevNotes.map((note) =>
-          note._id === id ? { ...note, content: editedContent } : note
+          note._id === id ? { ...note, content: editedContent, title: editT } : note
         )
       );
 
@@ -110,18 +113,39 @@ export function Home({ userProfile, setUserProfile }) {
   function handleStartEdit(note) {
     setEditMode(note._id);
     setEditedContent(note.content);
+    setEditedTitle(note.title)
   }
 
   function handleCancelEdit() {
     setEditMode(null);
     setEditedContent("");
+    setEditedTitle("")
+  }
+
+  async function handleSearch(){
+    e.preventDefault();
+    try {
+      const res = await fetch(`/search?query=${query}`, {
+        method: "GET",
+        header: {
+          "Content-Type": "applicaion/json",
+          "Authorization": `Bearer ${token}`
+        }
+      })
+
+      const data = res.json()
+      setResult(data)
+      console.log(result)
+    } catch (error) {
+      console.error('Error fetching search results:', error);
+    }
   }
 
   return (
     <div className="bg-purple-900 min-h-screen flex flex-col items-center">
       <div className="bg-purple-800 p-6 rounded-lg shadow-lg w-full max-w-4xl mt-4">
         <div className="flex flex-col md:flex-row md:items-center justify-between">
-          <Header userProfile={userProfile} handleLogout={handleLogout} />
+          <Header userProfile={userProfile} handleLogout={handleLogout} handleSearch={handleSearch}/>
         </div>
         <div className="mt-10">
           <Link to="/newnote" className="bg-red-700 p-6 w-fit text-3xl rounded text-white hover:bg-red-900 cursor-pointer">+</Link>
@@ -136,6 +160,9 @@ export function Home({ userProfile, setUserProfile }) {
           handleSaveEdit={handleSaveEdit}
           handleCancelEdit={handleCancelEdit}
           handleDelete={handleDelete}
+          editTitle={editTitle}
+          setEditedTitle={setEditedTitle}
+          result={result}
         />
       </div>
     </div>

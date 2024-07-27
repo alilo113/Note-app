@@ -10,7 +10,10 @@ export function NoteList({
   handleSaveEdit,
   handleCancelEdit,
   handleDelete,
-  userProfile
+  userProfile,
+  editTitle={editTitle},
+  setEditedTitle={setEditedTitle},
+  result
 }) {
   return (
     <div className="mt-10">
@@ -26,6 +29,12 @@ export function NoteList({
             >
               {editMode === note._id ? (
                 <div>
+                  <input 
+                    type="text"
+                    value={editTitle}
+                    onChange={(e) => setEditedTitle(e.target.value)}
+                    className="w-full mb-3 p-2 border border-gray-300 rounded"
+                  />
                   <textarea
                     value={editedContent}
                     onChange={(e) => setEditedContent(e.target.value)}
@@ -48,6 +57,7 @@ export function NoteList({
                 </div>
               ) : (
                 <div>
+                  <h1 className="text-3xl mb-3 text-bold">{note.title}</h1>
                   <div className="break-words">{note.content}</div>
                   <Menu>
                     <MenuButton className="absolute top-2 right-2 text-3xl cursor-pointer">...</MenuButton>

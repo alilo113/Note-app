@@ -77,16 +77,17 @@ app.post("/log-in", async (req, res) => {
 // Create new note route
 app.post("/newnote", auth, async (req, res) => {
     try {
-        const { content } = req.body;
+        const { content, title } = req.body;
         const userId = req.user.id; // Extract user ID from the authenticated request
 
-        if (!content) {
+        if (!content && title) {
             return res.status(400).json({ error: "Content is required" });
         }
 
         const newNote = new Note({
             user: userId,
-            content
+            content,
+            title
         });
 
         await newNote.save();
@@ -152,6 +153,16 @@ app.get("/profile", auth, async (req, res) => {
       });
     } catch (error) {
       res.status(500).json({ message: "Error fetching profile", error: error.message });
+    }
+});
+
+app.get("/search", auth, async (req, res) => {
+    try {
+        const { query } = req.query;
+        const result = await Note.find({ $text: { $search: query } });
+        res.json(result);
+    } catch (error) {
+        res.status(500).json({ error: "Internal server error" });
     }
 });
 
